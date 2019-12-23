@@ -383,6 +383,18 @@ let g:airline_section_z = airline#section#create(['_diffmerge', ...other_parts])
 
 ![Status line indicator](./screenshots/airline_merge_indicator.png)
 
+
+You can run vimscript when mergemode begins and ends:
+
+```vim
+augroup your_mergetool
+  au!
+  autocmd User MergetoolStart set nospell
+  autocmd User MergetoolStop set spell
+augroup END
+```
+
+
 ### Quitting merge mode
 
 When exiting merge mode, `vim-mergetool` would prompt you whether merge was successful. If not, it will rollback changes to the buffer, will not save `MERGED` file to disk, and exit with non-zero code, when running as a `git mergetool`.

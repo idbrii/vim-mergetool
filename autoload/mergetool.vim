@@ -61,6 +61,7 @@ function! mergetool#bind_commands()
   command! -nargs=1 MergetoolToggleLayout call mergetool#toggle_layout(<f-args>)
   command! -nargs=0 MergetoolPreferLocal call mergetool#prefer_revision('local')
   command! -nargs=0 MergetoolPreferRemote call mergetool#prefer_revision('remote')
+  doautocmd User MergetoolStart
 endf
 
 function! mergetool#unbind_commands()
@@ -69,7 +70,15 @@ function! mergetool#unbind_commands()
   delcommand MergetoolToggleLayout
   delcommand MergetoolPreferLocal
   delcommand MergetoolPreferRemote
+  doautocmd User MergetoolStop
 endf
+
+" Dummy autocmds to prevent errors.
+augroup mergetool_dummy
+  au!
+  autocmd User MergetoolStart let s:mergetool_dummy = 1
+  autocmd User MergetoolStop let s:mergetool_dummy = 0
+augroup END
 
 " Stop mergetool effect depends on:
 " - when run as 'git mergetool'
