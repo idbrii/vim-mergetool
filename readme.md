@@ -275,6 +275,41 @@ Git detects whether merge was successful or not in two ways:
 `vim-mergetool` supports both options. On quit, if merge was unsuccessful,  it both discards any unsaved changes to buffer without touching file's `ctime` and returns non-zero exit code.
 
 
+### Running as other scm mergetool
+
+You can set the g:mergetool_args_order variable when you start vim to tell vim-mergetool that your arguments are the files to use for merging. Setup your scm to start vim like this:
+
+    gvim --nofork -c "let g:mergetool_args_order = 'MBRL'" -c "MergetoolStart" $MERGED $BASE $REMOTE $LOCAL
+
+**MERGED should be the first file** because MergetoolStart is only valid in a file with conflict markers.
+
+Your scm likely has its own names for these filenames. Check your documentation.
+
+
+#### Example: Subversion
+
+Subversion names the files something like this:
+
+* MERGED --> file.vim
+* BASE --> file.vim.r404217
+* REMOTE --> file.vim.r404563
+* LOCAL --> file.vim.mine
+
+So you'd start a merge like this:
+
+    gvim --nofork -c "let g:mergetool_args_order = 'MBRL'" -c "MergetoolStart" file.vim file.vim.r404217 file.vim.r404563 file.vim.mine
+
+vim-mergetool will act like it does as a git-mergetool (no extra tab and won't try to access git to load other files).
+
+For TortoiseSVN, create a batchfile like this and set it as your mergetool:
+
+    set LOCAL=%1
+    set REMOTE=%2
+    set BASE=%3
+    set MERGED=%4
+    gvim --nofork -c "let g:mergetool_args_order = 'MBLR'" -c "Merge" "%MERGED%" "%BASE%" "%LOCAL%" "%REMOTE%"
+
+
 ### Running directly from running Vim instance
 You can enter and exit merge mode from running Vim instance by opening a file with conflict markers, and running one of the commands:
 

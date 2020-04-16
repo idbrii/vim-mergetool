@@ -6,6 +6,7 @@ endfunction
 let g:mergetool_layout = get(g:, 'mergetool_layout', 'mr')
 let g:mergetool_prefer_revision = get(g:, 'mergetool_prefer_revision', 'local')
 let g:MergetoolSetLayoutCallback = get(g:, 'MergetoolSetLayoutCallback', function('s:noop'))
+let g:mergetool_args_order = get(g:, 'mergetool_args_order', '')
 
 " {{{ Public exports
 
@@ -37,6 +38,16 @@ function! mergetool#start() "{{{
   let s:mergedfile_contents = join(getline(0, "$"), "\n") . "\n"
   let s:mergedfile_fileformat = &fileformat
   let s:mergedfile_filetype = &filetype
+
+  if !empty(g:mergetool_args_order)
+    let success = s:apply_args_order(s:mergedfile_bufnr, g:mergetool_args_order)
+    if !success
+      echohl WarningMsg
+      echo "g:mergetool_args_order didn't use the current file as MERGED. Ensure you're using the order as seen in :args."
+      echohl None
+      return
+    endif
+  endif
 
   " Detect if we're run as 'git mergetool' by presence of BASE|LOCAL|REMOTE buf names
   let s:run_as_git_mergetool = bufnr('BASE') != -1 &&
@@ -115,6 +126,38 @@ function! mergetool#toggle() " {{{
   else
     call mergetool#start()
   endif
+endfunction " }}}
+
+" Create hidden buffers that use git's special buffer names to support any
+" scm. We never create a MERGED buffer. Instead, return it so we can validate
+" it's as expected.
+function! s:apply_args_order(merged_bufnr, arg_order) " {{{
+  let abbrevs = {
+        \ 'M': 'MERGED',
+        \ 'B': 'BASE',
+        \ 'R': 'REMOTE',
+        \ 'L': 'LOCAL' }
+
+  let i = 1
+  for labbr in split(a:arg_order, '\zs')
+    if labbr ==# 'M'
+      let current_arg_bufnr = bufnr(argv(i - 1))
+      if a:merged_bufnr != current_arg_bufnr
+        " Fail -- input merged buffer number doesn't match arg order.
+        return 0
+      endif
+    else
+      execute 'silent' i 'argument'
+      execute 'silent file' abbrevs[labbr]
+      setlocal buftype=nofile
+      setlocal bufhidden=hide
+    endif
+    let i += 1
+  endfor
+
+  execute "buffer " . a:merged_bufnr
+  " Success
+  return 1
 endfunction " }}}
 
 " Opens set of windows with merged file and various file revisions
