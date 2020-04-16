@@ -149,6 +149,11 @@ function! mergetool#set_layout(layout) " {{{
     let l:_winstate = winsaveview()
   endif
 
+  " Ensure merged file (which likely has unsaved conflict removal changes) can
+  " be hidden without error.
+  let bufhidden_bak = getbufvar(s:mergedfile_bufnr, '&bufhidden')
+  call setbufvar(s:mergedfile_bufnr, '&bufhidden', 'hide')
+
   " Before changing layout, turn off diff mode in all visible windows
   windo diffoff
 
@@ -198,6 +203,7 @@ function! mergetool#set_layout(layout) " {{{
   if s:goto_win_with_merged_file() && exists('l:_winstate')
     call winrestview(l:_winstate)
   endif
+  call setbufvar(s:mergedfile_bufnr, '&bufhidden', bufhidden_bak)
 endfunction " }}}
 
 " Toggles between given and default layout
