@@ -101,29 +101,11 @@ git checkout --conflict=diff3 {file}
 - Prompts whether merge was successful on quit. If not, rollbacks changes and report non-zero exit status code when run as a `git mergetool`.
 - Smart diff exchange commands. Tell direction of a window to `diffget` or `diffput` instead of specifying a buffer number. Especially handy for 3-way diffs. Not limited to merge conflict scenarios, can be used for regular diffs.
 - Can tell if we're in merge mode right now. Useful for showing some sort of indicator in a status line.
+- Use as a mergetool for git and other source control management systems.
 
 **NOTE**: `vim-mergetool` does not set up any key mappings for you. It justs exports a handful of commands and `<plug>` mappings. You're free to set up key mappings in your `vimrc` as you'd like.
 
-### Preferred conflict side
-`vim-mergetool` removes conflict markers from `MERGED` file, and picks up `ours/local` side of a conflict by default. If you prefer another side of a conflict:
-
-```vim
-" possible values: 'local' (default), 'remote', 'base'
-let g:mergetool_prefer_revision = 'remote'
-```
-
-If you don't want `vim-mergetool` to process `MERGED` file and remove raw conflict markers:
-
-```vim
-let g:mergetool_prefer_revision = 'unmodified'
-```
-
-Alternatively, you can start with `local` or `unmodified` revision, and change your mind later during merge process by running one of these commands:
-
-```vim
-:MergetoolPreferLocal
-:MergetoolPreferRemote
-```
+See [the documentation](doc/mergetool.txt) for more commands and configuration options.
 
 ### Available revisions to compare
 
@@ -253,90 +235,6 @@ Here's the end result:
 ![Layout advanced customization](./screenshots/layout_advanced_customization.png)
 
 
-### Running as a `git mergetool`
-
-`vim-mergetool` can be configured to run as a `git mergetool`. In your `~/.gitconfig`:
-
-```ini
-[merge]
-tool = vim_mergetool
-conflictstyle = diff3
-
-[mergetool "vim_mergetool"]
-cmd = vim -f -c "MergetoolStart" "$MERGED" "$BASE" "$LOCAL" "$REMOTE"
-trustExitCode = true
-```
-
-Git detects whether merge was successful or not in two ways:
-- When `trustExitCode = false`, checks if `MERGED` file was modified.
-- When `trustExitCode = true`, checks exit code of merge tool process.
-
-`vim-mergetool` supports both options. On quit, if merge was unsuccessful,  it both discards any unsaved changes to buffer without touching file's `ctime` and returns non-zero exit code.
-
-
-### Running as other scm mergetool
-
-If your scm doesn't use files called `BASE`, `REMOTE`, `LOCAL` as merge tempfiles (like svn), you can set the g:mergetool_args_order variable to tell mergetool which argument is which file. Setup your scm to start vim like this:
-
-    gvim --nofork -c "let g:mergetool_args_order = 'MBRL'" -c "MergetoolStart" $MERGED $BASE $REMOTE $LOCAL
-
-**MERGED should be the first file** because MergetoolStart is only valid in a file with conflict markers.
-
-Your scm likely has its own variable names for these filenames. Check your documentation.
-
-
-#### Example: Subversion
-
-Subversion names the files something like this:
-
-* MERGED --> file.vim
-* BASE --> file.vim.r404217
-* REMOTE --> file.vim.r404563
-* LOCAL --> file.vim.mine
-
-So you'd start a merge like this:
-
-    gvim --nofork -c "let g:mergetool_args_order = 'MBRL'" -c "MergetoolStart" file.vim file.vim.r404217 file.vim.r404563 file.vim.mine
-
-vim-mergetool will act like it does as a git-mergetool (no extra tab and won't try to access git to load other files).
-
-For TortoiseSVN, create a batchfile like this and set it as your mergetool:
-
-    set LOCAL=%1
-    set REMOTE=%2
-    set BASE=%3
-    set MERGED=%4
-    gvim --nofork -c "let g:mergetool_args_order = 'MBLR'" -c "Merge" "%MERGED%" "%BASE%" "%LOCAL%" "%REMOTE%"
-
-
-### Running directly from running Vim instance
-You can enter and exit merge mode from running Vim instance by opening a file with conflict markers, and running one of the commands:
-
-```vim
-:MergetoolStart
-:MergetoolStop
-:MergetoolToggle
-```
-
-You can set up a key mapping to toggle merge mode:
-
-```vim
-nmap <leader>mt <plug>(MergetoolToggle)
-```
-
-When exiting merge mode, if merge was unsuccessful, `vim-mergetool` discards changes to merged file and rollback to a buffer state as it were right before starting a new merge.
-
-Unlike running as a `git mergetool`, `LOCAL`, `REMOTE` and `BASE` history revisions are not passed from the outside. In this mode, `vim-mergetool` extracts them from the numbered stages of Git index.
-
-```bash
-$ git cat-file -p :1:{file} > {file}.base
-$ git cat-file -p :2:{file} > {file}.local
-$ git cat-file -p :3:{file} > {file}.remote
-```
-
-**ASSUMPTION:** Therefore, it's assumed that a git merge is in progress, and `cwd` of running Vim instance is set to repository root dir.
-
-
 ### Smart diff exchange commands
 
 Vim's `:diffget` and `:diffput` commands are convenient and unambiguous as soon as you have only two buffers in diff mode. If you prefer 3-way diff, you're out of lucky, as you need to explicitly tell the buffer number you want to exchange diff with.
@@ -394,26 +292,7 @@ nnoremap <expr> <Down> &diff ? ']c' : '<Down>'
 ### Merge mode detection
 You can detect whether you're in merge mode now, by inspecting `g:mergetool_in_merge_mode` variable.
 
-It can be helpful to show indicator in a status line. Example for [vim-airline](https://github.com/vim-airline/vim-airline):
-
-```vim
-function! AirlineDiffmergePart()
-  if get(g:, 'mergetool_in_merge_mode', 0)
-    return '↸'
-  endif
-
-  if &diff
-    return '↹'
-  endif
-
-  return ''
-endfunction
-
-call airline#parts#define_function('_diffmerge', 'AirlineDiffmergePart')
-call airline#parts#define_accent('_diffmerge', 'bold')
-
-let g:airline_section_z = airline#section#create(['_diffmerge', ...other_parts])
-```
+It can be helpful to show indicator in a status line. See mergetool-statusline in [the documentation](doc/mergetool.txt) to setup [vim-airline](https://github.com/vim-airline/vim-airline) like this:
 
 ![Status line indicator](./screenshots/airline_merge_indicator.png)
 
