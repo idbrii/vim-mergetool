@@ -327,7 +327,13 @@ function! s:load_revision(revision)
     call s:remove_conflict_markers(a:revision)
     setlocal nomodifiable readonly buftype=nofile bufhidden=delete nobuflisted
     execute "setlocal filetype=" . s:mergedfile_filetype
-    execute "file " . a:revision
+    let bufname = a:revision
+    if s:run_as_git_mergetool && has('win32')
+      " Cannot create a buffer called 'remote' if there's already one called
+      " 'REMOTE' because win32 is not case-sensitive.
+      let bufname .= '_derived'
+    endif
+    execute "file " . bufname
   elseif a:revision ==# 'BASE' || a:revision ==# 'REMOTE' || a:revision ==# 'LOCAL'
 
     " First, if run as 'git mergetool', try find buffer by name: 'BASE|REMOTE|LOCAL'
