@@ -136,7 +136,7 @@ Alternatively, you can start with `local` or `unmodified` revision, and change y
 
 ### Layout
 
-`vim-mergetool` defaults to two vertical splits layout with `MERGED` file on the left, and `remote` revision on the right. `MERGED` file is processed according to `g:mergetool_prefer_revision` setting as described above.
+`vim-mergetool` defaults to two vertical splits layout with `MERGED` file on the left and `remote` revision on the right. `MERGED` file is processed according to `g:mergetool_prefer_revision` setting as described above.
 
 ```vim
 " (m) - for working tree version of MERGED file
@@ -152,7 +152,7 @@ let g:mergetool_layout = 'bmr'
 
 ![3 way diff vertical split layout](./screenshots/bmr_3splits_layout.png)
 
-To show usual `REMOTE`, `LOCAL`, `BASE` history revisions, use uppercase characters:
+Lower case letters use files derived from the merged file (by accepting that file's view of conflicts). To use the original `REMOTE`, `LOCAL`, `BASE` files from git, use uppercase characters:
 
 ```vim
 let g:mergetool_layout = 'LmR'
@@ -160,7 +160,7 @@ let g:mergetool_layout = 'LmR'
 
 By the way, this setup is pretty much same to what [vim-fugitive](https://github.com/tpope/vim-fugitive) `:Gdiff` does, except that conflict markers are already removed. You can use `g:mergetool_prefer_revision='unmodified'` to replicate vim-fugitive completely. Indeed, `vim-mergetool` is flexible enough to replicate any existing vim+merge solution.
 
-Vertical splits are used by default. If you prefer working with horizontal splits:
+Vertical splits are used by default. Use a comma to split horizontally:
 
 ```vim
 let g:mergetool_layout = 'm,r'
@@ -182,8 +182,7 @@ For example, you can start with 2-way diff layout, and then temporarily toggle a
 
 
 ```vim
-" In 'vimrc'
-" Default layout
+" In 'vimrc', set your default layout.
 let g:mergetool_layout = 'mr'
 
 " Later, during merge process:
@@ -277,13 +276,13 @@ Git detects whether merge was successful or not in two ways:
 
 ### Running as other scm mergetool
 
-You can set the g:mergetool_args_order variable when you start vim to tell vim-mergetool that your arguments are the files to use for merging. Setup your scm to start vim like this:
+If your scm doesn't use files called `BASE`, `REMOTE`, `LOCAL` as merge tempfiles (like svn), you can set the g:mergetool_args_order variable to tell mergetool which argument is which file. Setup your scm to start vim like this:
 
     gvim --nofork -c "let g:mergetool_args_order = 'MBRL'" -c "MergetoolStart" $MERGED $BASE $REMOTE $LOCAL
 
 **MERGED should be the first file** because MergetoolStart is only valid in a file with conflict markers.
 
-Your scm likely has its own names for these filenames. Check your documentation.
+Your scm likely has its own variable names for these filenames. Check your documentation.
 
 
 #### Example: Subversion
@@ -325,7 +324,7 @@ You can set up a key mapping to toggle merge mode:
 nmap <leader>mt <plug>(MergetoolToggle)
 ```
 
-When exiting merge mode, if merge was unsuccessful, `vim-mergetool` would discard changes to merged file and rollback to a buffer state as it were right before starting a new merge.
+When exiting merge mode, if merge was unsuccessful, `vim-mergetool` discards changes to merged file and rollback to a buffer state as it were right before starting a new merge.
 
 Unlike running as a `git mergetool`, `LOCAL`, `REMOTE` and `BASE` history revisions are not passed from the outside. In this mode, `vim-mergetool` extracts them from the numbered stages of Git index.
 
@@ -378,7 +377,7 @@ If the rightmost split were the active one:
 
 Same logic applies to "up" and "down" directions. Useful if you prefer horizontal splits.
 
-**Conclusion**: despite how many splits are opened and what's the layout, you don't need to wrap your head around `diffput` vs `diffget` semantics, and you don't need to figure out correct buffer numbers manually. You just tell desired diff movement direction, and `vim-mergetool` handles the details for you.
+**Conclusion**: despite how many splits are opened and what's the layout, you don't need to wrap your head around `diffput` vs `diffget` semantics, and you don't need to figure out correct buffer numbers manually. You just give desired diff movement direction, and `vim-mergetool` handles the details for you.
 
 **Limitation**: `DiffExchange` commands work only in normal mode, and do not support visual mode and working with line ranges.
 
@@ -387,8 +386,8 @@ Same logic applies to "up" and "down" directions. Useful if you prefer horizonta
 If you like `<C-arrow>` mappings from the snippet above, you might also want to map `<up>` and `<down>` keys to navigate diffs, instead of default `[c` and `]c` mappings. They're not used anyway, since you're using `h,j,k,l` for movements, are you? ;-)
 
 ```vim
-nmap <expr> <Up> &diff ? '[c' : '<Up>'
-nmap <expr> <Down> &diff ? ']c' : '<Down>'
+nnoremap <expr> <Up> &diff ? '[c' : '<Up>'
+nnoremap <expr> <Down> &diff ? ']c' : '<Down>'
 ```
 
 
@@ -456,7 +455,7 @@ function s:QuitWindow()
   quit
 endfunction
 
-command QuitWindow call s:QuitWindow()
+command! QuitWindow call s:QuitWindow()
 nnoremap <silent> <leader>q :QuitWindow<CR>
 ```
 
