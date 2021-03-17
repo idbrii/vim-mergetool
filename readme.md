@@ -314,6 +314,9 @@ When exiting merge mode, `vim-mergetool` would prompt you whether merge was succ
 
 ![Quit prompt](./screenshots/quit_prompt.png)
 
+
+If the merge was successful, mergetool will `fugitive-:Gwrite`, `git add`, or `svn resolved` as appropriate. Use `let g:mergetool_mark_resolved = 0` to disable this behaviour.
+
 You can either issue `:MergetoolStop` or `:MergetoolToggle` commands, or use dedicated mapping.
 
 Yet another approach, which I prefer in my personal `vimrc`, is having a `<leader>q` key mapped to context-aware `QuitWindow()` function. It detects whether we're in merge mode, and runs `:MergetoolStop` command, or just uses normal "quit" command otherwise.

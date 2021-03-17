@@ -95,6 +95,14 @@ When exiting merge mode, if merge was unsuccessful, mergetool discards changes
 to merged file and rollback to a buffer state as it were right before starting
 a new merge.
 
+                                                  *g:mergetool_mark_resolved*
+
+If the merge was successful, mergetool will do |fugitive|'s |:Gwrite| if
+available, or fall back to `git add` or `svn resolved` if a git or svn repo is
+detected.
+To disable this behaviour: >
+  let g:mergetool_mark_resolved = 0
+<
                                                   *:MergetoolToggle*
 
 Invokes |:MergetoolStart| when no merge is active and |:MergetoolStop| when a

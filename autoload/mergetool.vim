@@ -7,6 +7,7 @@ let g:mergetool_layout = get(g:, 'mergetool_layout', 'mr')
 let g:mergetool_prefer_revision = get(g:, 'mergetool_prefer_revision', 'local')
 let g:MergetoolSetLayoutCallback = get(g:, 'MergetoolSetLayoutCallback', function('s:noop'))
 let g:mergetool_args_order = get(g:, 'mergetool_args_order', '')
+let g:mergetool_mark_resolved = get(g:, 'mergetool_mark_resolved', 1)
 
 " {{{ Public exports
 
@@ -138,6 +139,21 @@ function! mergetool#stop() " {{{
       silent call s:restore_merged_file_contents()
     else
       write
+      if g:mergetool_mark_resolved
+        let absolute = expand('%:p')
+        let file_dir = fnamemodify(absolute, ':h')
+        let find_path = file_dir ..';'
+        if exists(':Gwrite') == 2 && !empty(FugitiveGitDir())
+          " Prefer to use fugitive's add to index.
+          Gwrite
+
+        elseif executable('git') && !empty(finddir('.git', find_path))
+          echo system(printf('git -C %s add %s', file_dir, absolute))
+
+        elseif executable('svn') && !empty(finddir('.svn', find_path))
+          echo system('svn resolved '.. expand('%:p'))
+        endif
+      endif
     endif
 
     let g:mergetool_in_merge_mode = 0
