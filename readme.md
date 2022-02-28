@@ -1,10 +1,8 @@
 # vim-mergetool
 
-Efficient way of using Vim as a Git mergetool. :cake: With `vim-mergetool` you can have your cake and eat it too. Check out the demo.
+*Improved fork of samoshkin/vim-mergetool.*
 
-<a title="Vim as a merge tool. Demo" href="https://youtu.be/VxpCgQyUXlI?t=429">
-  <img src="https://i.imgur.com/yJYROb8.png" width="640">
-</a>
+Merge without dealing with three-way merges or editing diff hunks.
 
 ## Overview
 
@@ -35,7 +33,7 @@ set nocompatible
 filetype plugin indent on
 
 call plug#begin('~/.vim/plugged')
-  Plug 'samoshkin/vim-mergetool'
+  Plug 'idbrii/vim-mergetool'
 call plug#end()
 
 let g:mergetool_layout = 'mr'
