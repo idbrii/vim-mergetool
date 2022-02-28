@@ -69,14 +69,14 @@ endfunction "}}}
 
 function! mergetool#bind_commands()
   command! -nargs=0 MergetoolStop call mergetool#stop()
-  command! -nargs=1 MergetoolSetLayout call mergetool#set_layout(<f-args>)
-  command! -nargs=1 MergetoolToggleLayout call mergetool#toggle_layout(<f-args>)
-  command! -nargs=0 MergetoolPreferLocal call mergetool#prefer_revision('local')
-  command! -nargs=0 MergetoolPreferRemote call mergetool#prefer_revision('remote')
-  command! -nargs=0 MergetoolDiffExchangeLeft call mergetool#DiffExchange('h')
-  command! -nargs=0 MergetoolDiffExchangeRight call mergetool#DiffExchange('l')
-  command! -nargs=0 MergetoolDiffExchangeDown call mergetool#DiffExchange('j')
-  command! -nargs=0 MergetoolDiffExchangeUp call mergetool#DiffExchange('k')
+  command! -bar -nargs=1 MergetoolSetLayout call mergetool#set_layout(<f-args>)
+  command! -bar -nargs=1 MergetoolToggleLayout call mergetool#toggle_layout(<f-args>)
+  command! -bar -nargs=0 MergetoolPreferLocal call mergetool#prefer_revision('local')
+  command! -bar -nargs=0 MergetoolPreferRemote call mergetool#prefer_revision('remote')
+  command! -bar -nargs=0 MergetoolDiffExchangeLeft call mergetool#DiffExchange('h')
+  command! -bar -nargs=0 MergetoolDiffExchangeRight call mergetool#DiffExchange('l')
+  command! -bar -nargs=0 MergetoolDiffExchangeDown call mergetool#DiffExchange('j')
+  command! -bar -nargs=0 MergetoolDiffExchangeUp call mergetool#DiffExchange('k')
   doautocmd User MergetoolStart
 endf
 

@@ -9,7 +9,8 @@ let g:mergetool_in_merge_mode = 0
 
 " Commands and <plug> mappings for mergetool state. Additional commands
 " available during merging.
-command! -nargs=0 MergetoolStart call mergetool#start()
+command! -bar -nargs=0 MergetoolStart call mergetool#start()
+" No bar for toggle since it might trigger input.
 command! -nargs=0 MergetoolToggle call mergetool#toggle()
 
 nnoremap <silent> <Plug>(MergetoolToggle) :<C-u>call mergetool#toggle()<CR>
