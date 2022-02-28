@@ -35,7 +35,7 @@ function! mergetool#start() "{{{
 
   " Remember original file properties
   let s:mergedfile_bufnr = bufnr('%')
-  let s:mergedfile_name = expand('%')
+  let s:mergedfile_name = expand('%:p')
   let s:mergedfile_contents = join(getline(0, "$"), "\n") . "\n"
   let s:mergedfile_fileformat = &fileformat
   let s:mergedfile_filetype = &filetype
@@ -403,8 +403,6 @@ function! s:load_revision(revision)
     else
       enew
       call s:load_revision_from_index(a:revision)
-      setlocal nomodifiable readonly buftype=nofile bufhidden=delete nobuflisted
-      execute "setlocal filetype=" . s:mergedfile_filetype
       execute "file " . a:revision
     endif
   else
@@ -420,13 +418,12 @@ endfunction
 " $ git show :2:hello.rb > hello.ours.rb
 " $ git show :3:hello.rb > hello.theirs.rb
 function! s:load_revision_from_index(revision)
-
   let index = {
         \ 'BASE': 1,
         \ 'LOCAL': 2,
         \ 'REMOTE': 3 }
-  execute printf("read !git cat-file -p :%d:%s", index[a:revision], s:mergedfile_name)
-  silent 1delete _
+  " Rely on fugitive since it will figure out the correct path to pass to git.
+  execute printf("Gedit :%d:%s", index[a:revision], s:mergedfile_name)
 endfunction
 
 " Removes conflict markers from current file, leaving one side of the conflict

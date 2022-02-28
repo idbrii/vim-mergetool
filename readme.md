@@ -6,7 +6,6 @@ Efficient way of using Vim as a Git mergetool. :cake: With `vim-mergetool` you c
   <img src="https://i.imgur.com/yJYROb8.png" width="640">
 </a>
 
-
 ## Overview
 
 `vim-mergetool` processes `MERGED` file and extracts `ours`, `theirs`, or `common` sides of a conflict by parsing conflict markers left by Git. Then it shows 2-way diff between `ours` and `theirs` versions, with raw conflict markers being already removed.
@@ -20,6 +19,10 @@ In a screenshot below, `MERGED` file is on the left with conflict markers alread
 Plus, to resolve the conflict you don't need to edit conflict markers directly - just pick either side of a conflict using `:diffget` and `:diffput` commands.
 
 This plugin was initially inspired by [whiteinge/diffconflicts](https://github.com/whiteinge/diffconflicts). Check out [how this plugin is different from existing solutions](#how-is-it-different-from-x).
+
+When triggering merges from within vim (as opposed to as a git merge tool),
+works even better with [vim-fugitive](https://github.com/tpope/vim-fugitive)
+installed.
 
 ## Minimal working example (TL;DR)
 
