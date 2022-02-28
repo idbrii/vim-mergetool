@@ -251,7 +251,7 @@ nmap <expr> <C-Down> &diff? '<Plug>(MergetoolDiffExchangeDown)' : '<C-Down>'
 nmap <expr> <C-Up> &diff? '<Plug>(MergetoolDiffExchangeUp)' : '<C-Up>'
 ```
 
-Commands are available as well:
+Commands are available as well, but only during a merge:
 
 ```vim
 :MergetoolDiffExchangeLeft
