@@ -22,6 +22,14 @@ When triggering merges from within vim (as opposed to as a git merge tool),
 works even better with [vim-fugitive](https://github.com/tpope/vim-fugitive)
 installed.
 
+Newer versions of git support a
+[mergetool.hideResolved](https://git-scm.com/docs/git-mergetool#Documentation/git-mergetool.txt-mergetoolhideResolved)
+option that produces a similar result: This flag causes git to overwrite LOCAL
+and REMOTE so that only the unresolved conflicts remain. However, using
+vim-mergetool *instead* defaults to two-way merge, allows you to easily switch
+to a three-way merge, and preserves the original LOCAL/REMOTE files.
+
+
 ## Minimal working example (TL;DR)
 
 Use your favorite Vim plugin manager.
