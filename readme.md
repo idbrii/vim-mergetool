@@ -22,6 +22,14 @@ When triggering merges from within vim (as opposed to as a git merge tool),
 works even better with [vim-fugitive](https://github.com/tpope/vim-fugitive)
 installed.
 
+Newer versions of git support a
+[mergetool.hideResolved](https://git-scm.com/docs/git-mergetool#Documentation/git-mergetool.txt-mergetoolhideResolved)
+option that produces a similar result: This flag causes git to overwrite LOCAL
+and REMOTE so that only the unresolved conflicts remain. However, using
+vim-mergetool *instead* defaults to two-way merge, allows you to easily switch
+to a three-way merge, and preserves the original LOCAL/REMOTE files.
+
+
 ## Minimal working example (TL;DR)
 
 Use your favorite Vim plugin manager.
@@ -365,6 +373,7 @@ Here is the same merge scenario opened with a default `vimdiff` as a mergetool:
 
 #### Existing solutions
 
+  - Use git's [mergetool.hideResolved option](https://git-scm.com/docs/git-mergetool#Documentation/git-mergetool.txt-mergetoolhideResolved) that also turns merges into two-way diffs where the diff is only the conflicting parts.
   - default `vimdiff` merge tool. Shows layout with 3 vertical splits: `LOCAL`, `REMOTE`, `BASE` revisions, and the horizontal split at the bottom with a `MERGED` file, containing raw conflict markers.
   - [vim-fugitive](https://github.com/tpope/vim-fugitive) `:Gdiff` command, which automatically detects conflict markers in a file and switches into 3-way diff. Shows 3 vertical splits: `LOCAL`, `REMOTE` revisions and `MERGED` file in the middle with raw conflict markers. See this [reddit comment](https://www.reddit.com/r/vim/comments/b0jjgw/github_samoshkinvimmergetool_efficient_way_of/eif6oio/) on difference between [vim-fugitive](https://github.com/tpope/vim-fugitive) and this plugin.
   - [whiteinge/diffconflicts](https://github.com/whiteinge/diffconflicts). Parses `MERGED` file and removes conflict markers to pick up one side of a conflict. Default to 2-split layout with `local` and `remote` revisions. `vim-mergetool` uses the same idea, plus brings many additional features.
