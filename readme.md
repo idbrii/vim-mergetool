@@ -243,10 +243,14 @@ Vim's `:diffget` and `:diffput` commands are convenient and unambiguous as soon 
 `vim-mergetool` comes with `DiffExchange` commands and mapping, that accepts direction of a diff movement: "left", "right", "up", "down". You can set up your own key mappings for diff mode only:
 
 ```vim
-nmap <expr> <C-Left> &diff? '<Plug>(MergetoolDiffExchangeLeft)' : '<C-Left>'
-nmap <expr> <C-Right> &diff? '<Plug>(MergetoolDiffExchangeRight)' : '<C-Right>'
-nmap <expr> <C-Down> &diff? '<Plug>(MergetoolDiffExchangeDown)' : '<C-Down>'
-nmap <expr> <C-Up> &diff? '<Plug>(MergetoolDiffExchangeUp)' : '<C-Up>'
+  nnoremap <buffer> <SID>(cleft)  <C-Left>
+  nnoremap <buffer> <SID>(cright) <C-right>
+  nnoremap <buffer> <SID>(cdown)  <C-down>
+  nnoremap <buffer> <SID>(cup)    <C-up>
+  nmap <expr> <C-Left>  get(g:, 'mergetool_in_merge_mode', 0) ? '<Plug>(MergetoolDiffExchangeLeft)'  : '<sid>(cleft)'
+  nmap <expr> <C-Right> get(g:, 'mergetool_in_merge_mode', 0) ? '<Plug>(MergetoolDiffExchangeRight)' : '<sid>(cright)'
+  nmap <expr> <C-Down>  get(g:, 'mergetool_in_merge_mode', 0) ? '<Plug>(MergetoolDiffExchangeDown)'  : '<sid>(cdown)'
+  nmap <expr> <C-Up>    get(g:, 'mergetool_in_merge_mode', 0) ? '<Plug>(MergetoolDiffExchangeUp)'    : '<sid>(cup)'
 ```
 
 Commands are available as well, but only during a merge:
