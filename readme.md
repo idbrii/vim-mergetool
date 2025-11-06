@@ -240,13 +240,18 @@ Here's the end result:
 
 Vim's `:diffget` and `:diffput` commands are convenient and unambiguous as soon as you have only two buffers in diff mode. If you prefer 3-way diff, you're out of lucky, as you need to explicitly tell the buffer number you want to exchange diff with.
 
-`vim-mergetool` comes with `DiffExchange` commands and mapping, that accepts direction of a diff movement: "left", "right", "up", "down". You can set up your own key mappings for diff mode only:
+`vim-mergetool` comes with `DiffExchange` commands and mapping, that accepts direction of a diff movement: "left", "right", "up", "down". You can set up your own key mappings when merge is active:
 
 ```vim
-nmap <expr> <C-Left> &diff? '<Plug>(MergetoolDiffExchangeLeft)' : '<C-Left>'
-nmap <expr> <C-Right> &diff? '<Plug>(MergetoolDiffExchangeRight)' : '<C-Right>'
-nmap <expr> <C-Down> &diff? '<Plug>(MergetoolDiffExchangeDown)' : '<C-Down>'
-nmap <expr> <C-Up> &diff? '<Plug>(MergetoolDiffExchangeUp)' : '<C-Up>'
+  " SID mappings to make nonrecursive.
+  nnoremap <buffer> <SID>(vimrc-c-left)  <C-Left>
+  nnoremap <buffer> <SID>(vimrc-c-right) <C-right>
+  nnoremap <buffer> <SID>(vimrc-c-down)  <C-down>
+  nnoremap <buffer> <SID>(vimrc-c-up)    <C-up>
+  nmap <expr> <C-Left>  get(g:, 'mergetool_in_merge_mode', 0) ? '<Plug>(MergetoolDiffExchangeLeft)'  : '<SID>(vimrc-c-left)'
+  nmap <expr> <C-Right> get(g:, 'mergetool_in_merge_mode', 0) ? '<Plug>(MergetoolDiffExchangeRight)' : '<SID>(vimrc-c-right)'
+  nmap <expr> <C-Down>  get(g:, 'mergetool_in_merge_mode', 0) ? '<Plug>(MergetoolDiffExchangeDown)'  : '<SID>(vimrc-c-down)'
+  nmap <expr> <C-Up>    get(g:, 'mergetool_in_merge_mode', 0) ? '<Plug>(MergetoolDiffExchangeUp)'    : '<SID>(vimrc-c-up)'
 ```
 
 Commands are available as well, but only during a merge:
